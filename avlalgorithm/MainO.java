@@ -4,17 +4,16 @@ public class MainO {
 
 	public static void main(String args[]){
 		AVLO ob=new AVLO();
-		ob.insertar(4);
-		ob.insertar(1);
-		ob.insertar(5);
-		ob.insertar(3);
-		ob.insertar(6);
-		ob.insertar(7);
-		ob.insertar(23);
-		ob.insertar(6);
-		ob.insertar(90);
-		ob.insertar(55);
-		ob.eliminar(5);
-		ob.mostrar(1);		
+		ob.insertar("Marco");
+		ob.insertar("Dado");
+		ob.insertar("Zapato");
+		ob.insertar("Arbol");
+		ob.insertar("Hielo");
+		ob.insertar("Saco");
+		ob.insertar("Faro");
+		ob.eliminar("Zapato");
+		ob.eliminar("Faro");
+		ob.eliminar("Arbol");
+		ob.mostrar(1);				
 	}
 }

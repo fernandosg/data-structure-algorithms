@@ -49,139 +49,148 @@ public class AVLO {
 			postOrden(raiz);
 			break;
 		}
-		for(int i=0;i<orden.size();i++)
-			System.out.print(orden.get(i)+" ");		
+	}
+	
+	public Nodo encontrar(String nodo){
+		Nodo padre=raiz;
+		while(padre!=null){
+			if(padre.compara(nodo)<0)
+				padre=padre.getHijoDer();
+			else if(padre.compara(nodo)>0)
+				padre=padre.getHijoIzq();
+			else 
+				return padre;							
+		}
+		return null;
+	}	
+	
+	private void rotacionIzquierda(Nodo padre,Nodo hijo){
+		if(padre.getPadre()==null){
+			raiz=hijo;
+			padre.setPadre(null); 
+		}else{
+			padre.getPadre().actualizarHijo(padre, hijo);
+		}		
+		hijo.setPadre(padre.getPadre());
+		padre.eliminarNodosIzq();
+		if(hijo.getHijoDer()!=null){
+			padre.setHijoIzq(hijo.getHijoDer());
+			hijo.setHijoDer(null);
+		}else
+			padre.setHijoIzq(null);
+		hijo.setHijoDer(padre);
+		padre.setPadre(hijo);
+		padre.verificarProfunidad();
+	}
+	
+	private void rotacionDerecha(Nodo padre,Nodo hijo){		
+		if(padre.getPadre()==null){			
+			raiz=hijo;
+			hijo.setPadre(null);
+		}else{
+			padre.getPadre().actualizarHijo(padre, hijo);
+			hijo.setPadre(padre.getPadre());
+		}
+		padre.setPadre(hijo);
+		padre.eliminarNodosDer(); 
+		if(hijo.getHijoIzq()!=null){
+			padre.setHijoDer(hijo.getHijoIzq());		
+			padre.incrementarProfDer();
+		}else
+			padre.setHijoDer(null); 
+		hijo.setHijoIzq(padre);
+		padre.verificarProfunidad();
+	}	
+	
+	public void insertar(String nodo){
+		Nodo padre = raiz;
+		if(raiz==null){
+			raiz=new Nodo(nodo,null);
+		}else{			
+			padre=raiz;
+			while(padre!=null){
+				if(padre.compara(nodo)<0){										
+					if(padre.getHijoDer()!=null){
+						padre=padre.getHijoDer();
+						continue;
+					}else
+						break;
+				}else{					
+					if(padre.getHijoIzq()!=null){
+						padre=padre.getHijoIzq();
+						continue;
+					}else
+						break;
+				}
+			}
+			verificarDesbalance(padre.insertarNodo(nodo));			
+		}
+	}
+	
+	private void verificarDesbalance(Nodo nodo){
+		Nodo padre=nodo;	
+		boolean bandera=false;
+		while(padre.getPadre()!=null){
+			padre.getPadre().setProfunidad(padre);
+			if(padre.defineFactorEquilibrio()){
+				bandera=true;
+				break;
+			}else{
+				padre.getPadre().definirPredominancia(padre.ident_izq, padre.ident_der);
+				padre=padre.getPadre();
+			}
+		}
+		if(!bandera){
+			if(padre.defineFactorEquilibrio())
+				identificarRotacion(padre);			
+		}else
+			identificarRotacion(padre);
+			
+				
 	}
 	
 	
-	public void eliminar(int nodo){
+	public void identificarRotacion(Nodo padre){
+		if(padre.predom_der<padre.predom_izq){
+			if(padre.getHijoIzq().predom_der>padre.getHijoIzq().predom_izq){				
+				this.rotacionDerecha(padre.getHijoIzq(), padre.getHijoIzq().getHijoDer());
+				this.rotacionIzquierda(padre, padre.getHijoIzq());
+			}else
+				this.rotacionIzquierda(padre, padre.getHijoIzq());			
+		}else{
+			if(padre.getHijoDer().predom_izq>padre.getHijoDer().predom_der){
+				this.rotacionIzquierda(padre.getHijoDer(), padre.getHijoDer().getHijoIzq());
+				this.rotacionDerecha(padre, padre.getHijoDer());
+			}else{
+				this.rotacionDerecha(padre, padre.getHijoDer());
+			}
+		}
+	}			
+	
+	public void eliminar(String nodo){
 		Nodo nodo_puntero;
 		nodo_puntero=encontrar(nodo);
 		if(nodo_puntero!=null){
 			if(nodo_puntero.getHijoDer()!=null && nodo_puntero.getHijoIzq()!=null){
-				nodo_puntero.getPadre().actualizarHijo(nodo_puntero, nodo_puntero.getHijoIzq());
-				nodo_puntero.getHijoIzq().setPadre(nodo_puntero.getPadre());
+				nodo_puntero.getPadre().actualizarHijo(nodo_puntero, nodo_puntero.getHijoIzq());							
+				nodo_puntero.getHijoIzq().setPadre(nodo_puntero.getPadre());											
+				nodo_puntero.getHijoDer().setPadre(nodo_puntero.getHijoIzq());
+				nodo_puntero.getHijoIzq().setHijoDer(nodo_puntero.getHijoDer());
+				nodo_puntero.getHijoIzq().verificarProfunidad();
 			}else if(nodo_puntero.getHijoDer()!=null){
 				nodo_puntero.getPadre().actualizarHijo(nodo_puntero, nodo_puntero.getHijoDer());
 				nodo_puntero.getHijoDer().setPadre(nodo_puntero.getPadre());
+				nodo_puntero.getHijoDer().verificarProfunidad();
 			}else if(nodo_puntero.getHijoIzq()!=null){
 				nodo_puntero.getPadre().actualizarHijo(nodo_puntero, nodo_puntero.getHijoIzq());
 				nodo_puntero.getHijoIzq().setPadre(nodo_puntero.getPadre());
+				nodo_puntero.getHijoIzq().verificarProfunidad();
 			}else{
 				nodo_puntero.getPadre().actualizarHijo(nodo_puntero, null);
+				nodo_puntero.getPadre().verificarProfunidad();
 			}
 		}else
 			System.out.println("No se encontro ningun elemento");
 	}
 	
-	private Nodo encontrar(int nodo){	
-		if(raiz!=null){
-			busqueda=raiz;
-			while(busqueda!=null){
-				if(busqueda.getValor()>nodo){
-					busqueda=busqueda.getHijoIzq();
-				}else if(busqueda.getValor()<nodo){
-					busqueda=busqueda.getHijoDer();
-				}else
-					return busqueda;
-			}
-		}
-		return null;
-	}
-	
-	public void insertar(int nodo){
-		Nodo vac = null,padre = null;
-		if(raiz==null){
-			raiz=new Nodo(nodo,null);
-			vac=raiz;
-		}else{
-			vac=raiz;
-			while(true){
-				if(vac==null){
-					vac=new Nodo(nodo,padre);
-					if(nodo>padre.getValor())
-						padre.setHijoDer(vac);
-					else
-						padre.setHijoIzq(vac);
-					break;
-				}else if(vac.getValor()>nodo){
-					padre=vac;
-					vac=vac.getHijoIzq();					
-					continue;
-				}else{
-					padre=vac;
-					vac=vac.getHijoDer();
-					continue;
-				}				
-										
-			}
-			verificarFactorEquilibrio(vac);
-		}
-	}
-	
-	private void rotacionDoble(Nodo nodo_padre,Nodo nodo_hijo,int predom_der,int predom_izq,Nodo ultimo_nodo){
-		if(predom_der>predom_izq){
-			rotarDerechaSimple(nodo_hijo, nodo_hijo.getHijoDer());			
-			this.verificarFactorEquilibrio(nodo_hijo);
-		}else if(predom_izq>predom_der){
-			rotarIzquierdaSimple(nodo_hijo, nodo_hijo.getHijoIzq());
-		}else{
-			if(nodo_hijo.getHijoDer()!=null){
-				if(nodo_hijo.getHijoDer().getValor()==ultimo_nodo.getValor())
-					rotarDerechaSimple(nodo_hijo,nodo_hijo.getHijoDer());
-				else
-					rotarIzquierdaSimple(nodo_hijo,nodo_hijo.getHijoDer());				
-			}else
-				rotarIzquierdaSimple(nodo_hijo,nodo_hijo.getHijoIzq());
-		}		
-		this.verificarFactorEquilibrio(nodo_hijo);
-	}
-	
-	public void verificarFactorEquilibrio(Nodo nodo){
-		int predom_izq=0,predom_der=0,factor_eq=0;
-		Nodo vac=nodo.getPadre(),vac_hijo=nodo;
-		while(true){
-			if(vac==null)
-				break;
-			factor_eq=factor_eq+vac.defineFactorEquilibrio();
-			vac.identificarHijo(vac_hijo);
-			predom_der=predom_der+vac.predom_der;
-			predom_izq=predom_izq+vac.predom_izq;
-			if(factor_eq>1){
-				if(predom_der>0 && predom_izq>0)
-					rotacionDoble(vac,vac_hijo,predom_der,predom_izq,nodo);
-				else{
-					if(predom_der>0){
-						rotarDerechaSimple(vac,vac_hijo);
-					}else if(predom_izq>0){
-						rotarIzquierdaSimple(vac,vac_hijo);
-					}
-				}
-				break;
-			}
-			vac_hijo=vac;
-			vac=vac.getPadre();			
-		}
-	}
-	
-	private void rotarDerechaSimple(Nodo nodo_padre,Nodo nodo_hijo){	
-		nodo_hijo.setPadre(nodo_padre.getPadre());
-		nodo_padre.getPadre().actualizarHijo(nodo_padre, nodo_hijo);
-		nodo_padre.setPadre(nodo_hijo);
-		nodo_padre.setHijoDer(null);
-		if(nodo_hijo.getHijoIzq()!=null)
-			nodo_padre.setHijoDer(nodo_hijo.getHijoIzq());										
-		nodo_hijo.setHijoIzq(nodo_padre);
-	}
-	
-	private void rotarIzquierdaSimple(Nodo nodo_padre,Nodo nodo_hijo){
-		nodo_hijo.setPadre(nodo_padre.getPadre());
-		nodo_padre.getPadre().actualizarHijo(nodo_padre, nodo_hijo);
-		nodo_padre.setPadre(nodo_hijo);
-		nodo_padre.setHijoIzq(null);
-		if(nodo_hijo.getHijoDer()!=null){
-			nodo_padre.setHijoIzq(nodo_hijo.getHijoDer()); 		
-		}
-		nodo_hijo.setHijoDer(nodo_padre);	
-	}
 }

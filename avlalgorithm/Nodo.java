@@ -3,11 +3,20 @@ package avlalgorithm;
 
 public class Nodo {
 	private Nodo hijo_izq, hijo_der, padre;
+	private String definicion;
 	private String valor;
 	public int predom_izq=0,predom_der=0,ident_izq=0,ident_der=0;
-	private int profundidad=0,profundidad_izq,profundidad_der;
-	private boolean estado=false;
+	//private int profundidad=0;
 	public byte pos=0;
+	
+
+	public Nodo(String nodo,String definicion, Nodo padre) {
+		hijo_izq = null;
+		hijo_der = null;
+		valor=nodo;
+		this.definicion=definicion;
+		this.padre = padre;
+	}
 	
 	public int identificarPosicion(Nodo padre){
 		if(padre.getHijoDer()!=null)
@@ -18,11 +27,7 @@ public class Nodo {
 				return 1;		
 		return 0;
 		
-	}
-	
-	public int obtenerProfundidad(){
-		return profundidad;
-	}
+	}		
 	
 	public void definirPredominancia(int izq,int der){
 		this.ident_der=der;
@@ -37,12 +42,15 @@ public class Nodo {
 						predom_der++;
 					else
 						predom_der=(nodo.predom_der>nodo.predom_izq) ? nodo.predom_der+1 : nodo.predom_izq+1;
+					System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 				}else{
 					if(this.hijo_der==null)
 						predom_izq++;	
 					else{
 						predom_izq=(nodo.predom_izq>nodo.predom_der) ? nodo.predom_izq+1 : nodo.predom_der+1;
+						System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 					}
+					System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 				}
 			else
 				predom_izq=(nodo.predom_izq>nodo.predom_der) ? nodo.predom_izq+1 : nodo.predom_der+1;			
@@ -53,6 +61,7 @@ public class Nodo {
 						predom_der++;
 					else
 						predom_der=(nodo.predom_der>nodo.predom_izq) ? nodo.predom_der+1 : nodo.predom_der+1;
+					System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 				}
 			if(hijo_izq!=null)
 				if(this.hijo_izq.getValor()==nodo.getValor()){
@@ -60,8 +69,13 @@ public class Nodo {
 						predom_izq++;
 					else
 						predom_izq=(nodo.predom_izq>nodo.predom_der) ? nodo.predom_izq+1 : nodo.predom_der+1;
+					System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 				}
 		}
+	}
+	
+	public void setDefinicion(String definicion){
+		this.definicion=definicion;
 	}
 	
 	public void incrementarProfIzq(){
@@ -97,39 +111,16 @@ public class Nodo {
 		if(!(hijo_izq!=null && hijo_der!=null))
 			if(padre!=null)
 				padre.aumentarProfundidad();					
-	}*/
-
-	public Nodo(String nodo, Nodo padre) {
-		hijo_izq = null;
-		hijo_der = null;
-		valor=nodo;
-		this.padre = padre;
-	}
-
+	}*/	
 	
-	
-	
-	public boolean checarDesbalance(String tipo){
-		int test=predom_der;		
-		if(tipo=="izquierda"){		
-			return (Math.abs(predom_der-(predom_izq+1))>=2);			
-		}else{
-			return (Math.abs(predom_izq-(predom_der+1))>=2);
-		}
-	}
-	
-	public boolean esHoja(){
-		return hijo_izq==null && hijo_der==null;
-	}
-	
-	public Nodo insertarNodo(String palabra){
+	public Nodo insertarNodo(String palabra,String definicion){
 		Nodo me=this;
 		if(valor.compareTo(palabra)>0){
-			hijo_izq=new Nodo(palabra,me);
+			hijo_izq=new Nodo(palabra,definicion,me);
 			hijo_izq.ident_izq=1;
 			return hijo_izq;
 		}else{
-			hijo_der=new Nodo(palabra,me);
+			hijo_der=new Nodo(palabra,definicion,me);
 			hijo_der.ident_der=1;
 			return hijo_der;
 		}
@@ -150,9 +141,13 @@ public class Nodo {
 	public String getValor() {
 		return valor;
 	}
+	
+	public String getDefinicion(){
+		return this.definicion;
+	}
 
-	public void insertarHijoIzq(String valor, Nodo padre) {
-		this.hijo_izq = new Nodo(valor, padre);
+	public void insertarHijoIzq(String valor,String definicion, Nodo padre) {
+		this.hijo_izq = new Nodo(valor,definicion, padre);
 	}
 
 	public Nodo getPadre() {

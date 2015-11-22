@@ -4,18 +4,18 @@ import java.util.ArrayList;
 
 public class AVLO {	
 	String cadena="";
-	ArrayList<Integer> orden;
+	ArrayList<String> elementos;
 	Nodo raiz,busqueda;
 	int conta=0;
 	public AVLO(){
-		orden=new ArrayList<Integer>();
+		elementos=new ArrayList<String>();
 	}
 	
 	public void preOrden(Nodo nodo){		
 		if(nodo==null){
 			return;
 		}
-		System.out.print(nodo.getValor()+", ");
+		System.out.print(nodo.getValor()+"("+nodo.predom_izq+","+nodo.predom_der+"), ");
 		preOrden(nodo.getHijoIzq());
 		preOrden(nodo.getHijoDer());
 	}
@@ -42,7 +42,6 @@ public class AVLO {
 			preOrden(raiz);
 			break;
 		case 2:
-			this.orden.clear();
 			inOrden(raiz);
 			break;
 		case 3:
@@ -51,7 +50,23 @@ public class AVLO {
 		}
 	}
 	
-	public Nodo encontrar(String nodo){
+	public void modificar(String palabra,String definicion){
+		Nodo nodo=encontrar(palabra);
+		if(nodo!=null){
+			nodo.setDefinicion(definicion);
+		}else{
+			System.out.println("La palabra que busca no existe");
+		}
+	}
+	
+	public void buscar(String palabra){
+		Nodo nodo=encontrar(palabra);
+		if(nodo!=null){
+			System.out.println(nodo.getValor()+" "+nodo.getDefinicion());
+		}
+	}
+	
+	private Nodo encontrar(String nodo){
 		Nodo padre=raiz;
 		while(padre!=null){
 			if(padre.compara(nodo)<0)
@@ -102,35 +117,42 @@ public class AVLO {
 		padre.verificarProfunidad();
 	}	
 	
-	public void insertar(String nodo){
+	public void insertar(String nodo,String definicion){
 		Nodo padre = raiz;
 		if(raiz==null){
-			raiz=new Nodo(nodo,null);
+			raiz=new Nodo(nodo,definicion,null);
+			elementos.add(nodo);
 		}else{			
 			padre=raiz;
-			while(padre!=null){
-				if(padre.compara(nodo)<0){										
-					if(padre.getHijoDer()!=null){
-						padre=padre.getHijoDer();
-						continue;
-					}else
-						break;
-				}else{					
-					if(padre.getHijoIzq()!=null){
-						padre=padre.getHijoIzq();
-						continue;
-					}else
-						break;
+			if(!elementos.contains(nodo)){
+				while(padre!=null){
+					if(padre.compara(nodo)<0){										
+						if(padre.getHijoDer()!=null){
+							padre=padre.getHijoDer();
+							continue;
+						}else
+							break;
+					}else{					
+						if(padre.getHijoIzq()!=null){
+							padre=padre.getHijoIzq();
+							continue;
+						}else
+							break;
+					}
 				}
-			}
-			verificarDesbalance(padre.insertarNodo(nodo));			
+				elementos.add(nodo);
+				verificarDesbalance(padre.insertarNodo(nodo,definicion));
+			}else
+				System.out.println("Elemento repetido ");			
 		}
 	}
 	
 	private void verificarDesbalance(Nodo nodo){
 		Nodo padre=nodo;	
 		boolean bandera=false;
+		System.out.println("INSERTE ESTE NODO "+nodo.getValor());
 		while(padre.getPadre()!=null){
+			System.out.println("ESTARE PASANDO SOBRE SUS PADRES Y EL SIG ES "+padre.getPadre().getValor());
 			padre.getPadre().setProfunidad(padre);
 			if(padre.defineFactorEquilibrio()){
 				bandera=true;
@@ -144,15 +166,13 @@ public class AVLO {
 			if(padre.defineFactorEquilibrio())
 				identificarRotacion(padre);			
 		}else
-			identificarRotacion(padre);
-			
-				
+			identificarRotacion(padre);							
 	}
 	
 	
 	public void identificarRotacion(Nodo padre){
 		if(padre.predom_der<padre.predom_izq){
-			if(padre.getHijoIzq().predom_der>padre.getHijoIzq().predom_izq){				
+			if(padre.getHijoIzq().predom_der>padre.getHijoIzq().predom_izq){					
 				this.rotacionDerecha(padre.getHijoIzq(), padre.getHijoIzq().getHijoDer());
 				this.rotacionIzquierda(padre, padre.getHijoIzq());
 			}else

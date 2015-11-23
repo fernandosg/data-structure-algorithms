@@ -7,6 +7,7 @@ public class AVLO {
 	ArrayList<String> elementos;
 	Nodo raiz,busqueda;
 	int conta=0;
+	int conteo_niveles;
 	public AVLO(){
 		elementos=new ArrayList<String>();
 	}
@@ -16,6 +17,7 @@ public class AVLO {
 			return;
 		}
 		System.out.print(nodo.getValor()+"("+nodo.predom_izq+","+nodo.predom_der+"), ");
+		conteo_niveles++;
 		preOrden(nodo.getHijoIzq());
 		preOrden(nodo.getHijoDer());
 	}
@@ -51,24 +53,31 @@ public class AVLO {
 	}
 	
 	public void modificar(String palabra,String definicion){
+		conteo_niveles=0;
 		Nodo nodo=encontrar(palabra);
 		if(nodo!=null){
 			nodo.setDefinicion(definicion);
+			System.out.println("Numeros de niveles descendidos "+conteo_niveles);			
 		}else{
 			System.out.println("La palabra que busca no existe");
 		}
 	}
 	
 	public void buscar(String palabra){
+		this.conteo_niveles=0;
 		Nodo nodo=encontrar(palabra);
 		if(nodo!=null){
 			System.out.println(nodo.getValor()+" "+nodo.getDefinicion());
+			System.out.println("Definicion encontrada en el nivel "+conteo_niveles);
+		}else{
+			System.out.println("No se encontro la definicion, se busco hasta la profunidad "+conteo_niveles);
 		}
 	}
 	
 	private Nodo encontrar(String nodo){
 		Nodo padre=raiz;
 		while(padre!=null){
+			conteo_niveles=conteo_niveles+1;;
 			if(padre.compara(nodo)<0)
 				padre=padre.getHijoDer();
 			else if(padre.compara(nodo)>0)
@@ -150,9 +159,7 @@ public class AVLO {
 	private void verificarDesbalance(Nodo nodo){
 		Nodo padre=nodo;	
 		boolean bandera=false;
-		System.out.println("INSERTE ESTE NODO "+nodo.getValor());
 		while(padre.getPadre()!=null){
-			System.out.println("ESTARE PASANDO SOBRE SUS PADRES Y EL SIG ES "+padre.getPadre().getValor());
 			padre.getPadre().setProfunidad(padre);
 			if(padre.defineFactorEquilibrio()){
 				bandera=true;
@@ -189,6 +196,7 @@ public class AVLO {
 	
 	public void eliminar(String nodo){
 		Nodo nodo_puntero;
+		conteo_niveles=0;
 		nodo_puntero=encontrar(nodo);
 		if(nodo_puntero!=null){
 			if(nodo_puntero.getHijoDer()!=null && nodo_puntero.getHijoIzq()!=null){
@@ -209,6 +217,7 @@ public class AVLO {
 				nodo_puntero.getPadre().actualizarHijo(nodo_puntero, null);
 				nodo_puntero.getPadre().verificarProfunidad();
 			}
+			System.out.println("Niveles descendidos para eliminar la definicion "+conteo_niveles);
 		}else
 			System.out.println("No se encontro ningun elemento");
 	}

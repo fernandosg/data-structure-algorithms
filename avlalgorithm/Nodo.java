@@ -42,15 +42,12 @@ public class Nodo {
 						predom_der++;
 					else
 						predom_der=(nodo.predom_der>nodo.predom_izq) ? nodo.predom_der+1 : nodo.predom_izq+1;
-					System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 				}else{
 					if(this.hijo_der==null)
 						predom_izq++;	
 					else{
 						predom_izq=(nodo.predom_izq>nodo.predom_der) ? nodo.predom_izq+1 : nodo.predom_der+1;
-						System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 					}
-					System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 				}
 			else
 				predom_izq=(nodo.predom_izq>nodo.predom_der) ? nodo.predom_izq+1 : nodo.predom_der+1;			
@@ -61,7 +58,6 @@ public class Nodo {
 						predom_der++;
 					else
 						predom_der=(nodo.predom_der>nodo.predom_izq) ? nodo.predom_der+1 : nodo.predom_der+1;
-					System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 				}
 			if(hijo_izq!=null)
 				if(this.hijo_izq.getValor()==nodo.getValor()){
@@ -69,7 +65,6 @@ public class Nodo {
 						predom_izq++;
 					else
 						predom_izq=(nodo.predom_izq>nodo.predom_der) ? nodo.predom_izq+1 : nodo.predom_der+1;
-					System.out.println(getValor()+" TIENE "+predom_der+" DEL LADO DERECHO y "+predom_izq+" DEL LADO IZQ");
 				}
 		}
 	}

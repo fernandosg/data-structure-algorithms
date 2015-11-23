@@ -6,7 +6,6 @@ public class Nodo {
 	private String definicion;
 	private String valor;
 	public int predom_izq=0,predom_der=0,ident_izq=0,ident_der=0;
-	//private int profundidad=0;
 	public byte pos=0;
 	
 

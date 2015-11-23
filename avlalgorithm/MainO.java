@@ -1,7 +1,6 @@
 package avlalgorithm;
 
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import avlalgorithm.utils.LeerArchivo;
@@ -76,8 +75,7 @@ public class MainO {
 						ob.mostrar(2);
 						break;	
 					case 8:
-						System.out.println("Mostrando los elementos en PosOrden");
-						op=leer.nextInt();
+						System.out.println("Mostrando los elementos en PosOrden");						
 						ob.mostrar(3);
 						break;	
 					default:
@@ -92,22 +90,6 @@ public class MainO {
 
 	public static void main(String args[]){
 		MainO ob=new MainO();
-		ob.init();//*/
-		/*
-		AVLO ob=new AVLO();		
-		ob.insertar("Marco","");
-		ob.insertar("Dado","");
-		ob.insertar("Arbol","");
-		/*
-		ob.insertar("Zapato","");
-		ob.insertar("Arbol","");
-		ob.insertar("Hielo","");
-		ob.insertar("Marco","");
-		ob.insertar("Faro","");
-		ob.insertar("Saco", "");
-		ob.mostrar(1);			//*/
-		//ob.eliminar("Dado");
-		System.out.println("");
-//		ob.mostrar(1);
+		ob.init();
 	}
 }

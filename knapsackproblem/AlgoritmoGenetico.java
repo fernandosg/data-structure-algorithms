@@ -8,18 +8,18 @@ public class AlgoritmoGenetico {
 	private Solucion hijo_generado;
 	private int generaciones=0,individuos,padre=-1,madre=-1,umbral,cantidad_individuos;	
 	private double sp,porcentaje_cruza;	
-	public void init(int cantidad_individuos,String[][] valores,int umbral,int generaciones,double porcentaje_cruza,double porcentaje_mutacion){		
-		soluciones=new Solucion[cantidad_individuos];
-		this.individuos=cantidad_individuos;
+	public void init(int cantidad_individuos_orign,int cantidad_soluciones,String[][] valores,int umbral,int generaciones,double porcentaje_cruza,double porcentaje_mutacion){		
+		soluciones=new Solucion[cantidad_soluciones];
+		this.individuos=cantidad_individuos_orign;
 		this.generaciones=generaciones;
 		this.porcentaje_cruza=porcentaje_cruza;
 		this.umbral=umbral;
-		this.cantidad_individuos=cantidad_individuos;
-		for(int i=0;i<cantidad_individuos;i++){
-			soluciones[i]=new Solucion(umbral,cantidad_individuos);
+		this.cantidad_individuos=cantidad_soluciones;
+		for(int i=0;i<cantidad_soluciones;i++){
+			soluciones[i]=new Solucion(umbral,cantidad_individuos_orign);
 			soluciones[i].generarGenes(valores);
 		}
-		hijo_generado=new Solucion(umbral,cantidad_individuos);
+		hijo_generado=new Solucion(umbral,cantidad_individuos_orign);
 	}
 	
 	public void setSP(double sp){
@@ -58,15 +58,19 @@ public class AlgoritmoGenetico {
 	public void initAlgoritmo(){
 		generarPoblacion();
 		for(int i=0;i<generaciones;i++,padre=-1,madre=-1){
-			System.out.println("*********************+GENERACION "+i+"*********************************");
+			if(i==0){
+				System.out.println("*********************+GENERACION "+i+"*********************************");
+				mostrarSoluciones();
+			}
 			seleccionSoluciones();			
 			cruzamientoUniforme();
 			throasMutacion();
-			verificarFactibilidadMutados();			
-			mostrarSoluciones();
-			hijo_generado=new Solucion(this.umbral,this.cantidad_individuos);
+			verificarFactibilidadMutados();
+			hijo_generado=new Solucion(this.umbral,this.individuos);
 			
 		}
+		System.out.println("Ultima generacion***************************************************************");
+		mostrarSoluciones();
 	}		
 		
 	private void intercambio(GenotipoKnack ganador,int pos){
@@ -108,8 +112,9 @@ public class AlgoritmoGenetico {
 		while(padre==madre){
 			padre=getSeleccion((0 + (double)(Math.random() * ((limit - 0) + 1))));
 			madre=getSeleccion((0 + (double)(Math.random() * ((limit - 0) + 1))));
+			//System.out.println("el while no funciona "+padre);
 		}
-		System.out.println("el limitex= "+limit+" PADRE="+padre+" MADRE="+madre);
+		System.out.println("el limite = "+limit+" PADRE="+padre+" MADRE="+madre);
 	}
 	
 	private int getSeleccion(double limit){
@@ -124,7 +129,7 @@ public class AlgoritmoGenetico {
 	}
 	
 	public double getScaledRank(int pos){
-		return (2-sp+((2*(sp-1)*((double)(pos-1)/(individuos-1)))));
+		return (2-sp+((2*(sp-1)*((double)(pos-1)/(soluciones.length-1)))));
 	}
 			
 }

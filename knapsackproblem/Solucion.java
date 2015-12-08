@@ -1,9 +1,12 @@
 package knapsackproblem;
 
+import utils.Elemento;
+import utils.Rango;
 
-class Solucion implements Comparable<Solucion>{
+
+class Solucion implements Comparable<Solucion>,Elemento,Rango{
 	private GenotipoKnack[]	 genes;
-	private double fitness,ranked;
+	private double fitness,ranked,begin,end;
 	private int umbral,peso_total,cantidad_individuos;	
 	
 	public Solucion(int umbral,int cantidad_individuos){
@@ -82,10 +85,45 @@ class Solucion implements Comparable<Solucion>{
 	
 	@Override
 	public String toString(){
+		String cadena="";
 		for(int i=0;i<genes.length;i++)
-			System.out.print(genes[i]+" ");
-		System.out.println(" (valor fitness="+fitness+" peso="+this.peso_total+") ");
-		return "";
+			if(genes[i].getEstado()==1)
+				cadena+=genes[i]+" ";
+		return cadena+" (valor fitness="+fitness+" peso="+this.peso_total+") ";		
+	}
+
+	@Override
+	public boolean lessThan(double element) {
+		return (this.begin<element);
+	}
+
+	@Override
+	public double getValue() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean belongTo(double value) {
+		return this.begin<=value && this.end>=value;
+	}
+
+	@Override
+	public double getBegin() {
+		return this.begin;
+	}
+
+	@Override
+	public double getEnd() {
+		return end;
+	}
+	
+	public void setBegin(double begin){
+		this.begin=begin;
+	}
+	
+	public void setEnd(double end){
+		this.end=end;
 	}
 			
 }

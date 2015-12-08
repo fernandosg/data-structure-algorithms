@@ -24,6 +24,10 @@ class GenotipoKnack implements Genotipo{
 		return peso;
 	}
 	
+	public void cambiarEstado(){
+		estado=(estado==1) ? (byte)0 : 1;
+	}
+	
 	@Override
 	public String toString(){			
 		return "(est="+estado+" pes="+peso+" val="+valor+")";

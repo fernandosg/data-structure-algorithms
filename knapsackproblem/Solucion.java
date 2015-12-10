@@ -57,11 +57,11 @@ class Solucion implements Comparable<Solucion>,Elemento,Rango{
 	}
 	
 	public boolean esFactible(){
-		generarPesos();
 		return this.peso_total<=umbral;
 	}
 	
-	private void generarPesos(){
+	public void generarPesos(){
+		this.peso_total=0;
 		for(int i=0;i<genes.length;i++){
 			if(genes[i].getEstado()==1)
 				this.peso_total+=genes[i].getPeso();

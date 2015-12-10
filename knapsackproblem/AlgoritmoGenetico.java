@@ -9,9 +9,9 @@ import utils.Elemento;
 
 public class AlgoritmoGenetico {
 	private Solucion[] soluciones;	
-	private Solucion hijo_generado;
-	private int generaciones=0,individuos,padre=-1,madre=-1,umbral,limite_gen_cont,cont_gen_sin_mejorar;	
-	private double sp,porcentaje_cruza,porcentaje_mutacion;
+	private Solucion primer_hijo_generado,segundo_hijo_generado;
+	private int generaciones=0,individuos,padre=-1,madre=-1,umbral,limite_gen_cont,cont_gen_sin_mejorar,sin_soluciones;	
+	private double sp,porcentaje_mutacion;
 	private float random_cruza;	
 	private Random rand;
 	private boolean limite_gen=false;
@@ -20,14 +20,14 @@ public class AlgoritmoGenetico {
 		this.individuos=cantidad_individuos_orign;
 		this.generaciones=generaciones;
 		rand=new Random();
-		this.porcentaje_cruza=porcentaje_cruza;
 		this.porcentaje_mutacion=porcentaje_mutacion;
 		this.umbral=umbral;
 		for(int i=0;i<cantidad_soluciones;i++){
 			soluciones[i]=new Solucion(umbral,cantidad_individuos_orign);
 			soluciones[i].generarGenes(valores);
 		}
-		hijo_generado=new Solucion(umbral,cantidad_individuos_orign);		
+		primer_hijo_generado=new Solucion(umbral,cantidad_individuos_orign);
+		segundo_hijo_generado=new Solucion(umbral,cantidad_individuos_orign);		
 	}		
 	
 	public Solucion[] getSoluciones(){
@@ -47,7 +47,7 @@ public class AlgoritmoGenetico {
 		return (0 + (double)(Math.random() * ((limit - 0) + 1)));
 	}
 	
-	private void throasMutacion(){
+	/*private void throasMutacion(){
 		int random=(int)getRandom(this.soluciones[padre].getGenes().length);
 		GenotipoKnack ob;
 		while(true){
@@ -61,23 +61,45 @@ public class AlgoritmoGenetico {
 			this.hijo_generado.getGenes()[random+1]=ob;
 			break;
 		}
+	}*/
+	
+	private void comprobacionSoluciones(){
+		primer_hijo_generado.generarPesos();
+		segundo_hijo_generado.generarPesos();
+		if(primer_hijo_generado.esFactible() && segundo_hijo_generado.esFactible()){
+			primer_hijo_generado.generarValorFitness();
+			segundo_hijo_generado.generarValorFitness();
+			if(primer_hijo_generado.getValorFitness()<segundo_hijo_generado.getValorFitness()){
+				verificarFactibilidadMutados(primer_hijo_generado,soluciones.length-2);
+				verificarFactibilidadMutados(segundo_hijo_generado,soluciones.length-1);
+			}else{
+				verificarFactibilidadMutados(segundo_hijo_generado,soluciones.length-1);
+				verificarFactibilidadMutados(primer_hijo_generado,soluciones.length-2);				
+			}
+			this.cont_gen_sin_mejorar=(sin_soluciones==2) ? cont_gen_sin_mejorar+1 : cont_gen_sin_mejorar;
+		}else if(primer_hijo_generado.esFactible()){
+			primer_hijo_generado.generarValorFitness();
+			verificarFactibilidadMutados(primer_hijo_generado,soluciones.length-1);		
+			this.cont_gen_sin_mejorar=(sin_soluciones==1) ? cont_gen_sin_mejorar+1 : cont_gen_sin_mejorar;
+		}else if(segundo_hijo_generado.esFactible()){
+			segundo_hijo_generado.generarValorFitness();
+			verificarFactibilidadMutados(segundo_hijo_generado,soluciones.length-1);
+			this.cont_gen_sin_mejorar=(sin_soluciones==1) ? cont_gen_sin_mejorar+1 : cont_gen_sin_mejorar;
+		}
+		this.sin_soluciones=0;
 	}
 	
-	private void verificarFactibilidadMutados(){
-		if(this.hijo_generado.esFactible()){
-			hijo_generado.generarValorFitness();
-			if(soluciones[this.soluciones.length-1].getValorFitness()<hijo_generado.getValorFitness()){
-				soluciones[this.soluciones.length-1]=hijo_generado;
-			}else{
-				this.cont_gen_sin_mejorar++;
-			}
+	private void verificarFactibilidadMutados(Solucion hijo,int pos){				
+		if(soluciones[pos].getValorFitness()<hijo.getValorFitness()){
+			soluciones[pos]=hijo;
+			sin_soluciones++;
 		}
 	}
 	
-	private void mutacionBinaria(){
-		for(int i=0;i<hijo_generado.getGenes().length;i++)
+	private void mutacionBinaria(Solucion hijo){
+		for(int i=0;i<hijo.getGenes().length;i++)
 			if(rand.nextFloat()<=this.porcentaje_mutacion)
-				hijo_generado.getGenes()[i].cambiarEstado();
+				hijo.getGenes()[i].cambiarEstado();			
 	}
 	
 	private boolean verificarLimiteGen(){
@@ -91,31 +113,42 @@ public class AlgoritmoGenetico {
 		int i=0;
 		for(i=0;i<generaciones;i++,padre=-1,madre=-1){
 			if(i==0){
-				System.out.println("*********************+GENERACION "+i+"*********************************");
 				Archivo.escribirContenido(this.soluciones, "primera_generacion_");
 			}
 			seleccionSoluciones();			
 			cruzamientoUniforme();
-			mutacionBinaria();
-			verificarFactibilidadMutados();
-			hijo_generado=new Solucion(this.umbral,this.individuos);
+			mutacionBinaria(primer_hijo_generado);
+			mutacionBinaria(segundo_hijo_generado);
+			comprobacionSoluciones();
+			primer_hijo_generado=new Solucion(this.umbral,this.individuos);
+			segundo_hijo_generado=new Solucion(this.umbral,this.individuos);
 			if(!verificarLimiteGen()) break;					
 		}
-		System.out.println("se acabo en la generacion "+i+" "+generaciones+" "+this.limite_gen_cont+" "+this.cont_gen_sin_mejorar);
-		System.out.println(verificarLimiteGen());
-	}		
-		
-	private void intercambio(GenotipoKnack ganador,int pos){
-		hijo_generado.getGenes()[pos]=ganador;		
-	}
+		System.out.println(verificarLimiteGen()+" "+i+" "+this.cont_gen_sin_mejorar+" "+this.limite_gen_cont);		
+	}	
 	
 	private void cruzamientoUniforme(){
-		random_cruza=rand.nextFloat();
-		for(int i=0;i<soluciones[padre].getGenes().length;i++,random_cruza=rand.nextFloat())
-			if(random_cruza>=this.porcentaje_cruza)
-				intercambio(soluciones[padre].getGenes()[i],i);
-			else
-				intercambio(soluciones[madre].getGenes()[i],i);			
+	    int[] posicion_cruces=new int[soluciones[0].getGenes().length];
+	    int conteo_posiciones=0,pos;
+	    while(conteo_posiciones<posicion_cruces.length){
+			pos=(int) getRandom(soluciones[0].getGenes().length-1);
+			if(posicion_cruces[pos]!=0)
+				continue;
+			if(getRandom(1)==1){
+				primer_hijo_generado.getGenes()[pos]=new GenotipoKnack(soluciones[padre].getGenes()[pos]);				
+				posicion_cruces[pos]=1;
+			}else{
+				primer_hijo_generado.getGenes()[pos]=new GenotipoKnack(soluciones[madre].getGenes()[pos]);
+				posicion_cruces[pos]=2;
+			}
+			conteo_posiciones++;
+	    }
+	    for(int i=0;i<posicion_cruces.length;i++)
+	    	if(posicion_cruces[i]==1)
+	    		segundo_hijo_generado.getGenes()[i]=new GenotipoKnack(soluciones[madre].getGenes()[i]);
+	    	else
+	    		segundo_hijo_generado.getGenes()[i]=new GenotipoKnack(soluciones[padre].getGenes()[i]);	
+	    posicion_cruces=new int[soluciones[0].getGenes().length];
 	}
 	
 	private void seleccionSoluciones(){
@@ -141,11 +174,10 @@ public class AlgoritmoGenetico {
 			soluciones[i].setEnd(limit+ranked);			
 			limit+=ranked;
 		}		
-		while(padre==-1 || madre==-1){
+		while(padre==madre || (padre==-1 || madre==-1)){
 			padre=getSeleccion((0 + (double)(Math.random() * ((limit - 0) + 1))));
 			madre=getSeleccion((0 + (double)(Math.random() * ((limit - 0) + 1))));			
 		}
-		//System.out.println("el limite = "+limit+" PADRE="+padre+" MADRE="+madre);
 	}
 	
 	private int getSeleccion(double limit){

@@ -3,6 +3,12 @@ package knapsackproblem;
 class GenotipoKnack implements Genotipo{
 	private int peso,valor;
 	private byte estado;
+	
+	public GenotipoKnack(GenotipoKnack ob){
+		this.peso=ob.getPeso();
+		this.valor=ob.getValor();
+	}
+	
 	public GenotipoKnack(int peso,int valor){
 		this.peso=peso;
 		this.valor=valor;

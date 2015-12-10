@@ -7,6 +7,7 @@ class GenotipoKnack implements Genotipo{
 	public GenotipoKnack(GenotipoKnack ob){
 		this.peso=ob.getPeso();
 		this.valor=ob.getValor();
+		this.estado=ob.getEstado();
 	}
 	
 	public GenotipoKnack(int peso,int valor){
@@ -33,6 +34,8 @@ class GenotipoKnack implements Genotipo{
 	public void cambiarEstado(){
 		estado=(estado==1) ? (byte)0 : 1;
 	}
+	
+	
 	
 	@Override
 	public String toString(){			

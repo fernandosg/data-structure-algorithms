@@ -83,6 +83,10 @@ class Solucion implements Comparable<Solucion>,Elemento,Rango{
 		return Integer.compare((int)o.getValorFitness(), (int)this.getValorFitness());
 	}
 	
+	public void setGene(GenotipoKnack ob,int pos){
+		this.genes[pos]=ob;
+	}
+	
 	@Override
 	public String toString(){
 		String cadena="";

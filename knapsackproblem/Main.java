@@ -21,9 +21,9 @@ public class Main {
 			valores[i]=contenido.get(x).split("\\s+");		
 		AlgoritmoGenetico ob=new AlgoritmoGenetico();
 		//cantidad_individuos,valores,umbral,generaciones,porcentaje_cruza,porcentaje_mutacion
-		ob.init(Integer.parseInt(contenido.get(0)),Integer.parseInt(contenido.get(0))*3, valores, Integer.parseInt(contenido.get(2)),700,0.25,0.02);
+		ob.init(Integer.parseInt(contenido.get(0)),Integer.parseInt(contenido.get(0))*3, valores, Integer.parseInt(contenido.get(2)),100,0.25,0.02);
 		ob.setSP(1.3);
-		ob.setLimiteGeneraciones(30);
+		ob.setLimiteGeneraciones(50);
 		ob.initAlgoritmo();
 		Archivo.escribirContenido(ob.getSoluciones(), salida);		
 	}
